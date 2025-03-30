@@ -1,12 +1,14 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QApplication, QWidget, QPushButton, QHBoxLayout, QVBoxLayout, QLabel,
-                             QMessageBox, QRadioButton, QGroupBox)
+                             QRadioButton, QGroupBox)
 
 app = QApplication([])
 
 main_win = QWidget()
-main_win.setWindowTitle('Memory card')
-main_win.resize(400, 250)
+main_win.setWindowTitle('Memory Card')
+main_win.resize(400, 300)
+
+
 question_label = QLabel('Какой правильный ответ?')
 
 RadioGroupBox = QGroupBox('Варианты ответов')
@@ -19,57 +21,67 @@ rbtn_4 = QRadioButton('4')
 layout_ans1 = QHBoxLayout()
 layout_ans2 = QVBoxLayout()
 layout_ans3 = QVBoxLayout()
-layout_line = QVBoxLayout()
 
 layout_ans2.addWidget(rbtn_1)
 layout_ans2.addWidget(rbtn_2)
 layout_ans3.addWidget(rbtn_3)
 layout_ans3.addWidget(rbtn_4)
 
-layout_ans1.addLayout (layout_ans2)
-layout_ans1.addLayout (layout_ans3)
+layout_ans1.addLayout(layout_ans2)
+layout_ans1.addLayout(layout_ans3)
 RadioGroupBox.setLayout(layout_ans1)
 
-btn_OK = QPushButton('OK')
+btn_OK = QPushButton('Ответить')
 
-layout_line.addWidget(btn_OK)
-
-layout_line = QVBoxLayout()
-layout_line.addWidget(question_label, alignment=Qt.AlignCenter)
-layout_line.addWidget(RadioGroupBox, alignment=Qt.AlignCenter)
-layout_line.addStretch(1)
-layout_line.addWidget(btn_OK, alignment=Qt.AlignCenter)
-layout_line.addStretch(1)
+layout_question = QVBoxLayout()
+layout_question.addWidget(question_label, alignment=Qt.AlignCenter)
+layout_question.addWidget(RadioGroupBox, alignment=Qt.AlignCenter)
+layout_question.addStretch(1)
+layout_question.addWidget(btn_OK, alignment=Qt.AlignCenter)
+layout_question.addStretch(1)
 
 
+result_label = QLabel('Правильно/Неправильно')
+correct_answer_label = QLabel('Правильный ответ')
 
-question = QLabel('Самый сложный вопрос в мире')
+result_box = QGroupBox('Результат теста')
 
-BOX = QGroupBox('Результат теста')
+layout_result = QVBoxLayout()
+layout_result.addWidget(result_label, alignment=Qt.AlignLeft | Qt.AlignTop)
+layout_result.addWidget(correct_answer_label, alignment=Qt.AlignCenter)
 
-Lab = QLabel('Привально/Неправильно')
+result_box.setLayout(layout_result)
 
-Labe = QLabel('Правельный ответ')
+btn_next = QPushButton('Следующий вопрос')
 
-ver = QVBoxLayout()
-ver.addWidget(Lab, alignment= (Qt.AlignLeft|Qt.AlignTop))
-ver.addWidget(Labe, alignment= Qt.AlignCenter)
+layout_result_screen = QVBoxLayout()
+layout_result_screen.addWidget(result_box, alignment=Qt.AlignCenter)
+layout_result_screen.addWidget(btn_next, alignment=Qt.AlignCenter)
 
-BOX.setLayout(ver)
+main_layout = QVBoxLayout()
+main_layout.addLayout(layout_question)
+main_layout.addLayout(layout_result_screen) 
 
-Ceck = QPushButton()
-Ceck.setText('Следующий вопрос')
 
-lay = QVBoxLayout()
+result_box.hide()
+btn_next.hide()
 
-lay.addWidget(question, alignment = Qt.AlignCenter)
-lay.addWidget(BOX, alignment = Qt.AlignCenter)
-lay.addWidget(Ceck, alignment = Qt.AlignCenter)
+def check_answer():
+    RadioGroupBox.hide()
+    btn_OK.hide()
+    result_box.show()
+    btn_next.show()
 
-l = QHBoxLayout()
-l.addLayout(layout_line)
-l.addLayout(lay)
+btn_OK.clicked.connect(check_answer)
 
-main_win.setLayout(l)
+def next_question():
+    RadioGroupBox.show()
+    btn_OK.show()
+    result_box.hide()
+    btn_next.hide()
+
+btn_next.clicked.connect(next_question)
+
+main_win.setLayout(main_layout)
 main_win.show()
 app.exec_()
