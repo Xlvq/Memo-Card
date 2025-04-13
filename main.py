@@ -51,13 +51,19 @@ RadioGroupBox.setLayout(layout_ans1)
 
 answers = [rbtn_1, rbtn_2, rbtn_3, rbtn_4]
 
-questions_list = [
-    Question('Государственный язык Бразилии?', 'Португальский', 'Бразильский', 'Испанский', 'Английский'),
-    Question('Какого цвета нет на флаге России?', 'Зелёный', 'Красный', 'Белый', 'Синий'),
-    Question('Национальная валюта Японии?', 'Иена', 'Юань', 'Рупия', 'Вон'),
-    Question('Сколько дней в високосном году?', '366', '365', '364', '360'),
-    Question('Как называется столица Канады?', 'Оттава', 'Торонто', 'Ванкувер', 'Монреаль'),
-]
+questions_list = []
+with open("questions.json", 'r', encoding="utf-8") as f:
+    qs = json.load(f)
+    for question in qs:
+        q = Question(
+            question['question'],
+            question['right_answer'],
+            question['wrong_answers'][0],
+            question['wrong_answers'][1],
+            question['wrong_answers'][2]
+        )
+        questions_list.append(q)
+
 
 AnsGroupBox = QGroupBox("Результат теста")
 lb_Result = QLabel('прав ты или нет?')
@@ -88,7 +94,6 @@ layout_card.addStretch(1)
 layout_card.addLayout(layout_line3, stretch=1)
 layout_card.addStretch(1)
 layout_card.setSpacing(5)
-
 # ----------------------------------------------------------
 # Функции:
 # ----------------------------------------------------------
@@ -129,28 +134,33 @@ def ask(q: Question):
 
 def check_answer():
     """Проверка ответа пользователя"""
-    selected = None
-    for btn in answers:
-        if btn.isChecked():
-            selected = btn.text()
 
-    if selected == lb_Correct.text():
+
+
+    if answers[0].isChecked():
         lb_Result.setText("Правильно!")
-    else:
+        show_result()
+    elif answers[1].isChecked() or answers[2].isChecked() or answers[3].isChecked():
         lb_Result.setText("Неправильно!")
+        show_result()
+    
 
-    show_result()
 
+window = QWidget()
+window.cur_question = -1
 
 def next_question():
     """Выбирает следующий случайный вопрос"""
-    current_question = random.choice(questions_list)
+    window.cur_question += 1
+    if window.cur_question == len(questions_list):
+        window.cur_question = 0
+    current_question = questions_list[window.cur_question]
     ask(current_question)
 
 
 btn_OK.clicked.connect(lambda: check_answer() if btn_OK.text() == "Ответить" else next_question())
 
-window = QWidget()
+
 window.setLayout(layout_card)
 window.setWindowTitle('Memo Card')
 
